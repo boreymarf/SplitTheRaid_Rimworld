@@ -4,6 +4,8 @@
 	<SplitTheRaid.SplitModeSettings>Split mode settings</SplitTheRaid.SplitModeSettings>
 	<SplitTheRaid.SplitAffectSieges>Affect sieges</SplitTheRaid.SplitAffectSieges>
 	<SplitTheRaid.SplitAffectAllyRaids>Affect ally raids</SplitTheRaid.SplitAffectAllyRaids>
+	<SplitTheRaid.SplitKeepSameFaction>Keep the same faction</SplitTheRaid.SplitKeepSameFaction>
+	<SplitTheRaid.SplitKeepSameStrategy>Keep the same raid strategy</SplitTheRaid.SplitKeepSameStrategy>
 	<SplitTheRaid.Settings.SplitPointsMultiplier>Points multiplier per raid:</SplitTheRaid.Settings.SplitPointsMultiplier>
 	<SplitTheRaid.SplitMinPointsAmountToSplit>Minimum raid points to allow splitting:</SplitTheRaid.SplitMinPointsAmountToSplit>
 	<SplitTheRaid.SplitExtraRaids>Extra raids amount:</SplitTheRaid.SplitExtraRaids>

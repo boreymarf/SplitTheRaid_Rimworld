@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="IncidentHelper.cs" />
     <Compile Include="IncidentParms.cs" />
     <Compile Include="IncidentWorker_Raid.cs" />
     <Compile Include="Mod.cs" />

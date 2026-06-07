@@ -22,6 +22,8 @@ namespace SplitTheRaid
         // Split mode
         public bool splitAffectSieges = false;
         public bool splitAffectAllyRaids = false;
+        public bool splitKeepSameFaction = false;
+        public bool splitKeepSameStrategy = false;
         public float splitPointsMultiplier = 0.5f;
         public int splitMinPointsAmountToSplit = 1;
         public int splitExtraRaids = 1;
@@ -35,6 +37,8 @@ namespace SplitTheRaid
         {
             Scribe_Values.Look(ref splitAffectSieges, "splitAffectSieges", false);
             Scribe_Values.Look(ref splitAffectAllyRaids, "splitAffectAllyRaids", false);
+            Scribe_Values.Look(ref splitKeepSameFaction, "splitKeepSameFaction", false);
+            Scribe_Values.Look(ref splitKeepSameStrategy, "splitKeepSameStrategy", false);
             Scribe_Values.Look(ref splitPointsMultiplier, "splitPointsMultiplier", 0.5f);
             Scribe_Values.Look(ref splitMinPointsAmountToSplit, "splitMinPointsAmountToSplit", 75);
             Scribe_Values.Look(ref splitExtraRaids, "splitExtraRaids", 1);
