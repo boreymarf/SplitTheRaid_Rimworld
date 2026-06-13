@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using HarmonyLib;
 using RimWorld;
-using Unity.Burst.Intrinsics;
-using Unity.IO.LowLevel.Unsafe;
 using Verse;
 
 namespace SplitTheRaid
@@ -12,103 +9,109 @@ namespace SplitTheRaid
     public static class Patch_Raid_TryExecuteWorker
     {
         [HarmonyPrefix]
-        static bool Prefix(ref IncidentParms parms, IncidentWorker_Raid __instance)
+        static void Prefix(ref IncidentParms parms, IncidentWorker_Raid __instance)
         {
             var settings = SplitTheRaidMod.Settings;
+            var strategiesSettings = settings.strategySettings;
 
-            if (settings.raidHandlingMode != RaidHandlingMode.Split) {
-                return true;
-            }
-
-            if (parms is IncidentParmsPatched)
-            {
-                Log.Message("SplitTheRaid: Duplicate raid fired, skipping");
-                return true;
-            }
-            
             // Generate info before hand
             if (!__instance.TryGenerateRaidInfo(parms, out _))
             {
                 // If something failed, I'm not gonna deal with that
-                return true;
+                Log.Error("SplitTheRaid: faid to TryGenerateRaidInfo.");
+                return;
             }
 
-            if (parms.raidStrategy.defName == "Siege" && settings.splitAffectSieges == false)
+            if (parms.raidStrategy == null)
             {
-                return true;
+                Log.Error("SplitTheRaid: raidStrategy is null somehow, skipping raid.");
+                return;
+            }
+
+            if (!strategiesSettings.TryGetValue(parms.raidStrategy.defName, out var raidSettings))
+            {
+                Log.Error($"SplitTheRaid: Unknown strategy {parms.raidStrategy.defName}, cannot find a strategy setting for it!");
+                return;
+            }
+
+            if (settings.modDisabled)
+            {
+                return;
+            }
+
+            if (parms is IncidentParmsPatched)
+            {
+                // Check random strategy for being allowed (if it's random)
+                if (!settings.keepSameStrategy && !raidSettings.allowRandomPick)
+                {
+                    var allowedNames = strategiesSettings
+                        .Where(kvp => kvp.Value.allowRandomPick)
+                        .Select(kvp => kvp.Key)
+                        .Where(name => DefDatabase<RaidStrategyDef>.GetNamed(name, false) != null)
+                        .ToList();
+
+                    string chosenName;
+                    if (allowedNames.Count > 0)
+                    {
+                        chosenName = allowedNames.RandomElement();
+                    }
+                    else
+                    {
+                        Log.Warning("SplitTheRaid: No strategy with allowRandomPick. Using ImmediateAttack.");
+                        chosenName = "ImmediateAttack";
+                    }
+
+                    RaidStrategyDef newStrategy = DefDatabase<RaidStrategyDef>.GetNamed(chosenName);
+                    if (newStrategy != null)
+                    {
+                        parms.raidStrategy = newStrategy;
+                    }
+                    else
+                    {
+                        Log.Error($"SplitTheRaid: Failed to find RaidStrategyDef named '{chosenName}'");
+                    }
+                }
+
+                // Stop the code here
+                return;
             }
 
             bool isAlly = parms.faction != null && parms.faction.RelationWith(Faction.OfPlayer).kind == FactionRelationKind.Ally;
-            if (isAlly && settings.splitAffectAllyRaids == false)
+            if (isAlly && settings.affectAllyRaids == false)
             {
-                return true;
+                return;
             }
 
-            parms.points = parms.points * settings.splitPointsMultiplier;
-
-            IncidentParms newParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, parms.target);
-            newParms = IncidentParmsPatched.ConvertParms(parms);
-            newParms.forced = true;
-            newParms.faction = settings.splitKeepSameFaction ? parms.faction : null;
-
-            Log.Message($"SplitTheRaid: settings.splitKeepSameFaction {settings.splitKeepSameFaction} | newParms.faction = settings.splitKeepSameFaction ? parms.faction : null; {newParms.faction}");
-
-            newParms.raidStrategy = settings.splitKeepSameStrategy ? parms.raidStrategy : null;
-
-            IncidentDef raidType = isAlly ? IncidentDefOf.RaidFriendly : IncidentDefOf.RaidEnemy;
-            
-            int priority = 1000;
-
-            int targetTick = Find.TickManager.TicksGame;
-            for (int i = 0; i < settings.splitExtraRaids; i++)
+            if (raidSettings.allowPointsModification)
             {
-                int delayHours = settings.splitDelayHoursRange.RandomInRange;
-                int delay = delayHours * GenDate.TicksPerHour;
-                Log.Message($"SplitTheRaid: New delay is {delayHours} hours or {delay} ticks.");
-                targetTick += delay;
-                Find.Storyteller.incidentQueue.Add(raidType, targetTick, newParms, priority);
-                Log.Message($"SplitTheRaid: Duplicate raid scheduled at tick {targetTick}, queue size: {Find.Storyteller.incidentQueue.Count}");
+                parms.points *= settings.pointsMultiplier;
             }
 
-            
+            if (raidSettings.allowExtraRaids)
+            {
+                IncidentParms newParms = StorytellerUtility.DefaultParmsNow(IncidentCategoryDefOf.ThreatBig, parms.target);
+                newParms = IncidentParmsPatched.ConvertParms(parms);
+                newParms.forced = true;
+                newParms.faction = settings.keepSameFaction ? parms.faction : null;
+                newParms.raidStrategy = settings.keepSameStrategy ? parms.raidStrategy : null;
+                newParms.spawnCenter = settings.keepSameSpawnLocation ? parms.spawnCenter : IntVec3.Invalid;
 
-            return true;
-        }
-        [HarmonyPostfix]
-        static void Postfix(ref IncidentParms parms)
-        {
-            //Faction faction = parms.faction;
-            //bool isAlly = faction != null && faction.RelationWith(Faction.OfPlayer).kind == FactionRelationKind.Ally;
+                IncidentDef raidType = isAlly ? IncidentDefOf.RaidFriendly : IncidentDefOf.RaidEnemy;
 
-            //Log.Message($"SplitTheRaid: isAlly {isAlly}");
+                int priority = 1000; // dunno what priority does
 
-            //if (parms is IncidentParmsExtra)
-            //{
-            //    Log.Message("SplitTheRaid: Duplicate raid fired, skipping");
-            //    return;
-            //}
+                int targetTick = Find.TickManager.TicksGame;
+                for (int i = 0; i < settings.extraRaids; i++)
+                {
+                    int delayHours = settings.delayHoursRange.RandomInRange;
+                    int delay = delayHours * GenDate.TicksPerHour;
+                    Log.Message($"SplitTheRaid: New delay is {delayHours} hours or {delay} ticks.");
+                    targetTick += delay;
+                    Find.Storyteller.incidentQueue.Add(raidType, targetTick, newParms, priority);
+                    Log.Message($"SplitTheRaid: Duplicate raid scheduled at tick {targetTick}, queue size: {Find.Storyteller.incidentQueue.Count}");
+                }
+            }
 
-            //if (isAlly && !SplitTheRaidMod.Settings.splitAffectAllyRaids)
-            //{
-            //    // Skip
-            //    return;
-            //}
-
-            //IncidentParmsExtra splitParms = IncidentParmsExtra.ConvertParms(parms);
-            //splitParms.forced = true;
-
-            //if (isAlly)
-            //{
-            //    Find.Storyteller.incidentQueue.Add(IncidentDefOf.RaidFriendly, Find.TickManager.TicksGame + 1000, splitParms, 1000);
-            //}
-            //else
-            //{
-            //    Find.Storyteller.incidentQueue.Add(IncidentDefOf.RaidEnemy, Find.TickManager.TicksGame + 1000, splitParms, 1000);
-            //}
-
-            //Log.Message($"SplitTheRaid: Duplicate raid scheduled at tick {Find.TickManager.TicksGame + 1000}, queue size: {Find.Storyteller.incidentQueue.Count}");
-
-            //return;
         }
     }
 }

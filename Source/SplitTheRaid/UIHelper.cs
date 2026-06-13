@@ -192,15 +192,5 @@ namespace SplitTheRaid
             float rounded = Mathf.Round(value / step) * step;
             return (float)Math.Round(rounded, decimals, MidpointRounding.AwayFromZero);
         }
-
-        public static void DrawTabButton(Rect rect, ref RaidHandlingMode currentMode, RaidHandlingMode mode, string label, string tooltip)
-        {
-            bool isActive = currentMode == mode;
-            if (isActive) GUI.color = Color.green;
-            if (Widgets.ButtonText(rect, label))
-                currentMode = mode;
-            GUI.color = Color.white;
-            TooltipHandler.TipRegion(rect, tooltip.Translate());
-        }
     }
 }
