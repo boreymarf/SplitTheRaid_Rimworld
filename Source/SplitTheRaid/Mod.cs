@@ -95,10 +95,10 @@ namespace SplitTheRaid
         private const float totalFr = col0widthFr + col1widthFr + col2widthFr + col3widthFr;
 
         // Reserved heights
-        private const float descriptionHeight = 40f;
+        private const float descriptionHeight = 30f;
         private const float headerHeight = 24f;
         private const float rowHeight = 30f;
-        private const float tableBodyHeight = 280f;
+        private const float tableBodyHeight = 340f;
 
         private const float widthScrollbarOffset = 16f;
 
@@ -106,7 +106,7 @@ namespace SplitTheRaid
 
         public Dialog_StrategySettings()
         {
-            optionalTitle = "Strategy Configuration";
+            //optionalTitle = "Strategy Configuration";
             doCloseX = true;
             doCloseButton = true;
             closeOnClickedOutside = true;
@@ -127,8 +127,6 @@ namespace SplitTheRaid
             Widgets.Label(descriptionRect, "SplitTheRaid.TableDescription".Translate());
 
             // Change all text of next labels to be middle left
-            TextAnchor originalAlignment = Text.CurFontStyle.alignment;
-            Text.CurFontStyle.alignment = TextAnchor.MiddleLeft;
 
             // Table header
             Rect headerRect = new Rect(inRect.x, inRect.y + descriptionRect.height, inRect.width - widthScrollbarOffset, headerHeight);
@@ -173,6 +171,7 @@ namespace SplitTheRaid
 
                 // Strategy def name
                 Text.Anchor = TextAnchor.MiddleLeft;
+
                 Color originalColor = GUI.color;
                 if (!strategyExists)
                     GUI.color = Color.gray;
@@ -205,8 +204,6 @@ namespace SplitTheRaid
             }
 
             Widgets.EndScrollView();
-
-            Text.CurFontStyle.alignment = originalAlignment;
 
         }
     }
