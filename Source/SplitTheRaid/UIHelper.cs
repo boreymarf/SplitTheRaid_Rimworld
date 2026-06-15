@@ -1,96 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.EnterpriseServices;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
+using Verse.Noise;
 
 namespace SplitTheRaid
 {
     internal class UIHelper
     {
-        public class FloatRangeExpanded
-        {
-            private string _minBuf;
-            private string _maxBuf;
-            private float _prevMin;
-            private float _prevMax;
-            private float _localMin;
-            private float _localMax;
-
-            // Settings
-            private readonly float _globalMin;
-            private readonly float _globalMax;
-            private readonly float _step;
-            private readonly int _controlId;
-
-            public FloatRangeExpanded(float globalMin, float globalMax, float step = 0.1f, int controlId = 0)
-            {
-                _globalMin = globalMin;
-                _globalMax = globalMax;
-                _step = step;
-                _controlId = controlId == 0 ? GetHashCode() : controlId;
-            }
-
-            public void Draw(Listing_Standard listing, ref FloatRange range)
-            {
-                if (_minBuf == null) _minBuf = range.min.ToString("0.###");
-                if (_maxBuf == null) _maxBuf = range.max.ToString("0.###");
-
-                // Save old values before slider
-                _prevMin = range.min;
-                _prevMax = range.max;
-
-                Rect sliderRect = listing.GetRect(28f);
-                Widgets.FloatRange(sliderRect, _controlId, ref range, _globalMin, _globalMax, null, ToStringStyle.FloatTwo, 0f, GameFont.Small, null, _step);
-
-                // If slider changed values, update buffers
-                if (!Mathf.Approximately(_prevMin, range.min) || !Mathf.Approximately(_prevMax, range.max))
-                {
-                    _minBuf = range.min.ToString("0.###");
-                    _maxBuf = range.max.ToString("0.###");
-                }
-
-                // Inputs
-                Rect row = listing.GetRect(Text.LineHeight);
-                float gap = 8f;
-                float half = (row.width - gap) * 0.5f;
-
-                Rect minCol = new Rect(row.x, row.y, half, row.height);
-                Widgets.TextFieldNumeric(minCol, ref _localMin, ref _minBuf, _globalMin, _globalMax);
-
-                Rect maxCol = new Rect(row.x + half + gap, row.y, half, row.height);
-                Widgets.TextFieldNumeric(maxCol, ref _localMax, ref _maxBuf, _globalMin, _globalMax);
-
-                if (_localMin < _localMax)
-                {
-                    range.min = _localMin;
-                    range.max = _localMax;
-                }
-
-                range.min = Mathf.Clamp(range.min, _globalMin, _globalMax);
-                range.max = Mathf.Clamp(range.max, _globalMin, _globalMax);
-                if (range.min > range.max)
-                {
-                    range.max = range.min;
-                    _maxBuf = range.max.ToString("0.###");
-                }
-            }
-        }
         public class IntRangeExpanded
         {
-            private string _minBuf;
-            private string _maxBuf;
-            private int _prevMin;
-            private int _prevMax;
-            private int _localMin;
-            private int _localMax;
-
+            // Settings
             private readonly int _globalMin;
             private readonly int _globalMax;
-            private readonly int _step; // is not used
+            private readonly int _step; // isn't used
             private readonly int _controlId;
+
+            // Input buffers
+            private string _localInputMinBuf;
+            private string _localInputMaxBuf;
+            private int _localInputMinVal;
+            private int _localInputMaxVal;
+            private int _localInputMinValPrevious;
+            private int _localInputMaxValPrevious;
+
+            // Range buffers
+            private IntRange _localIntRangePrevious;
 
             public IntRangeExpanded(int globalMin, int globalMax, int step = 1, int controlId = 0)
             {
@@ -102,87 +41,211 @@ namespace SplitTheRaid
 
             public void Draw(Listing_Standard listing, ref IntRange range)
             {
-                // Can't do that in the constructor
-                // since we can't store ref of the range
-                if (_minBuf == null) _minBuf = range.min.ToString();
-                if (_maxBuf == null) _maxBuf = range.max.ToString();
-
-                _prevMin = range.min;
-                _prevMax = range.max;
-
+                // Draw slider
                 Rect sliderRect = listing.GetRect(28f);
-                // Используем Widgets.IntRange (существует в RimWorld)
                 Widgets.IntRange(sliderRect, _controlId, ref range, _globalMin, _globalMax, null, 0);
 
-                if (_prevMin != range.min || _prevMax != range.max)
-                {
-                    _minBuf = range.min.ToString();
-                    _maxBuf = range.max.ToString();
-                }
-
+                // Draw inputs
                 Rect row = listing.GetRect(Text.LineHeight);
                 float gap = 8f;
                 float half = (row.width - gap) * 0.5f;
-
                 Rect minCol = new Rect(row.x, row.y, half, row.height);
-                Widgets.TextFieldNumeric(minCol, ref _localMin, ref _minBuf, _globalMin, _globalMax);
-
+                Widgets.TextFieldNumeric(minCol, ref _localInputMinVal, ref _localInputMinBuf, _globalMin, _globalMax);
                 Rect maxCol = new Rect(row.x + half + gap, row.y, half, row.height);
-                Widgets.TextFieldNumeric(maxCol, ref _localMax, ref _maxBuf, _globalMin, _globalMax);
+                Widgets.TextFieldNumeric(maxCol, ref _localInputMaxVal, ref _localInputMaxBuf, _globalMin, _globalMax);
 
-                if (_localMin < _localMax)
+                // Range changed
+                if (_localIntRangePrevious != range)
                 {
-                    range.min = _localMin;
-                    range.max = _localMax;
+                    _localInputMinBuf = range.min.ToString();
+                    _localInputMinVal = range.min;
+                    _localInputMaxBuf = range.max.ToString();
+                    _localInputMaxVal = range.max;
+
+                }
+                // Min input changed
+                else if (_localInputMinValPrevious != _localInputMinVal)
+                {
+                    // If valid
+                    if (_localInputMinVal <= _localInputMaxVal)
+                    {
+                        range.min = _localInputMinVal;
+                    }
+                }
+                // Max input changed
+                else if (_localInputMaxValPrevious != _localInputMaxVal)
+                {
+                    // If valid
+                    if (_localInputMinVal <= _localInputMaxVal)
+                    {
+                        range.max = _localInputMaxVal;
+                    }
                 }
 
-                // TODO: Later make it unrestricted or something
-
-                range.min = Mathf.Clamp(range.min, _globalMin, _globalMax);
-                range.max = Mathf.Clamp(range.max, _globalMin, _globalMax);
-                if (range.min > range.max)
-                {
-                    range.max = range.min;
-                    _maxBuf = range.max.ToString();
-                }
+                _localInputMinValPrevious = _localInputMinVal;
+                _localInputMaxValPrevious = _localInputMaxVal;
+                _localIntRangePrevious = range;
             }
         }
 
-        public static void IntInput(Listing_Standard listing, ref int value, ref string buffer, string label, int min = 0, int max = 100)
+        public class IntInputExpanded
         {
-            Rect rect = listing.GetRect(Text.LineHeight);
+            // Settings
+            private readonly int _inputMin;
+            private readonly int _inputMax;
+            private readonly int _sliderMin;
+            private readonly int _sliderMax;
+            private readonly bool _drawSlider;
+            private readonly int _controlId;
 
-            float labelWidth = rect.width * 0.9f;
-            float inputWidth = rect.width * 0.1f;
+            // Input buffers
+            private string _localInputBuf;
+            private string _localInputBufPrevious;
+            private int _localInputVal;
+            private int _localInputValPrevious;
 
-            Rect labelRect = new Rect(rect.x, rect.y, labelWidth, rect.height);
-            Rect inputRect = new Rect(rect.x + labelWidth, rect.y, inputWidth, rect.height);
+            // Slider buffers
+            private int _localSliderVal;
+            private int _localSliderValPrevious;
 
-            Widgets.Label(labelRect, label);
-            Widgets.TextFieldNumeric(inputRect, ref value, ref buffer, min, max);
-
-            if (value.ToString() != buffer && buffer != "")
+            public IntInputExpanded(int inputMin, int inputMax, int sliderMin, int sliderMax, bool drawSlider = false, int controlId = 0)
             {
-                buffer = value.ToString();
+                _inputMin = inputMin;
+                _inputMax = inputMax;
+                _sliderMin = sliderMin;
+                _sliderMax = sliderMax;
+                _drawSlider = drawSlider;
+                _controlId = controlId == 0 ? GetHashCode() : controlId;
+            }
+
+            public void Draw(Listing_Standard listing, ref int value, string label)
+            {
+
+                // Draw label and field
+                Rect rect = listing.GetRect(Text.LineHeight);
+
+                float labelWidth = rect.width * 0.9f;
+                float inputWidth = rect.width * 0.1f;
+
+                Rect labelRect = new Rect(rect.x, rect.y, labelWidth, rect.height);
+                Rect inputRect = new Rect(rect.x + labelWidth, rect.y, inputWidth, rect.height);
+
+                Widgets.Label(labelRect, label);
+                Widgets.TextFieldNumeric(inputRect, ref _localInputVal, ref _localInputBuf, _inputMin, _inputMax);
+
+                // Draw slider
+                if (_drawSlider)
+                {
+                    _localSliderVal = Mathf.RoundToInt(listing.Slider(value, _sliderMin, _sliderMax));
+                }
+
+                // Slider changed
+                if (_localSliderValPrevious != _localSliderVal)
+                {
+                    value = _localSliderVal;
+                    _localInputBuf = _localSliderVal.ToString();
+                }
+                // Input changed
+                else if (_localInputValPrevious != _localInputVal)
+                {
+                    if (_localInputBuf != "")
+                    {
+                        value = _localInputVal;
+                        _localSliderVal = _localInputVal;
+                    }
+                }
+
+                _localSliderValPrevious = _localSliderVal;
+                _localInputValPrevious = _localInputVal;
             }
         }
 
-        public static void FloatInput(Listing_Standard listing, ref float value, ref string buffer, string label, float min = 0f, float max = 5f)
+        public class FloatInputExpanded
         {
-            Rect rect = listing.GetRect(Text.LineHeight);
+            // Settings
+            private readonly float _inputMin;
+            private readonly float _inputMax;
+            private readonly float _sliderMin;
+            private readonly float _sliderMax;
+            private readonly bool _drawSlider;
+            private readonly int _controlId;
+            private readonly float _step; // not used (kept for compatibility)
 
-            float labelWidth = rect.width * 0.9f;
-            float inputWidth = rect.width * 0.1f;
+            // Input buffers
+            private string _localInputBuf;
+            private string _localInputBufPrevious;
+            private float _localInputVal;
+            private float _localInputValPrevious;
 
-            Rect labelRect = new Rect(rect.x, rect.y, labelWidth, rect.height);
-            Rect inputRect = new Rect(rect.x + labelWidth, rect.y, inputWidth, rect.height);
+            // Slider buffers
+            private float _localSliderVal;
+            private float _localSliderValPrevious;
 
-            Widgets.Label(labelRect, label);
-            Widgets.TextFieldPercent(inputRect, ref value, ref buffer, min, max);
+            private bool _initialized;
 
-            if ((value * 100).ToString() != buffer && buffer != "")
+            public FloatInputExpanded(float inputMin, float inputMax, float sliderMin, float sliderMax, bool drawSlider = false, int controlId = 0, float step = 1f)
             {
-                buffer = (value * 100).ToString();
+                _inputMin = inputMin;
+                _inputMax = inputMax;
+                _sliderMin = sliderMin;
+                _sliderMax = sliderMax;
+                _drawSlider = drawSlider;
+                _controlId = controlId == 0 ? GetHashCode() : controlId;
+                _step = step;
+            }
+
+            public void Draw(Listing_Standard listing, ref float value, string label)
+            {
+                // Initialize local state from external value on first draw
+                if (!_initialized)
+                {
+                    _localInputVal = RoundToStep(value, 0.01f);
+                    _localSliderVal = _localInputVal;
+                    _localInputBuf = (Mathf.RoundToInt(_localInputVal * 100)).ToString();
+                    _initialized = true;
+                }
+
+                // Draw label and field
+                Rect rect = listing.GetRect(Text.LineHeight);
+
+                float labelWidth = rect.width * 0.9f;
+                float inputWidth = rect.width * 0.1f;
+
+                Rect labelRect = new Rect(rect.x, rect.y, labelWidth, rect.height);
+                Rect inputRect = new Rect(rect.x + labelWidth, rect.y, inputWidth, rect.height);
+
+                Widgets.Label(labelRect, label);
+                Widgets.TextFieldPercent(inputRect, ref _localInputVal, ref _localInputBuf, _inputMin, _inputMax);
+
+                // Ensure percent value is integer (round to nearest 0.01)
+                _localInputVal = RoundToStep(_localInputVal, 0.01f);
+
+                // Draw slider
+                if (_drawSlider)
+                {
+                    _localSliderVal = listing.Slider(value, _sliderMin, _sliderMax);
+                }
+
+                // Slider changed
+                if (_localSliderValPrevious != _localSliderVal)
+                {
+                    value = _localSliderVal;
+                    _localInputVal = value;
+                    _localInputBuf = (Mathf.RoundToInt(value * 100)).ToString();
+                }
+                // Input changed
+                else if (_localInputValPrevious != _localInputVal)
+                {
+                    if (_localInputBuf != "")
+                    {
+                        value = _localInputVal;
+                        _localSliderVal = _localInputVal;
+                        _localInputBuf = (Mathf.RoundToInt(_localInputVal * 100)).ToString();
+                    }
+                }
+
+                _localSliderValPrevious = _localSliderVal;
+                _localInputValPrevious = _localInputVal;
             }
         }
 

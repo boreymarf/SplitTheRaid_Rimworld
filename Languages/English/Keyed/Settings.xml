@@ -1,40 +1,43 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
-  <!-- Main settings -->
-  <SplitTheRaid.ModDisabled>Disable Mod</SplitTheRaid.ModDisabled>
-  <SplitTheRaid.AffectSieges>Affect sieges</SplitTheRaid.AffectSieges>
-  <SplitTheRaid.AffectAllyRaids>Affect ally raids</SplitTheRaid.AffectAllyRaids>
-  <SplitTheRaid.KeepSameFaction>Keep the same faction</SplitTheRaid.KeepSameFaction>
-  <SplitTheRaid.KeepSameStrategy>Keep the same raid strategy</SplitTheRaid.KeepSameStrategy>
-  <SplitTheRaid.KeepSameSpawnLocation>Keep the same spawn location</SplitTheRaid.KeepSameSpawnLocation>
-
-  <!-- Raid splitting parameters -->
-  <SplitTheRaid.PointsMultiplier>Points multiplier per raid:</SplitTheRaid.PointsMultiplier>
-  <SplitTheRaid.MinPointsAmountToSplit>Minimum raid points to allow splitting:</SplitTheRaid.MinPointsAmountToSplit>
-  <SplitTheRaid.ExtraRaids>Number of extra raids:</SplitTheRaid.ExtraRaids>
-  <SplitTheRaid.HoursBetweenRaids>Hours between raids:</SplitTheRaid.HoursBetweenRaids>
-
-  <!-- Delayed raids -->
-  <SplitTheRaid.DelayedRaidsAmount>Current amount of delayed raids: {0}</SplitTheRaid.DelayedRaidsAmount>
-  <SplitTheRaid.DelayedRaidsClear>Clear all</SplitTheRaid.DelayedRaidsClear>
-
-  <!-- Strategy configuration button -->
-  <SplitTheRaid.OpenStrategyConfig>Open strategy settings</SplitTheRaid.OpenStrategyConfig>
-
-  <!-- Debug info -->
-  <SplitTheRaid.SaveNotRunnning>The save is not running, no debug info can be provided.</SplitTheRaid.SaveNotRunnning>
-
-  <!-- Strategy table -->
-  <SplitTheRaid.TableDescription>Hover over columns for more info.</SplitTheRaid.TableDescription>
-  <SplitTheRaid.StrategyHeader>Strategy</SplitTheRaid.StrategyHeader>
-  <SplitTheRaid.ExtraHeader>Extra raids</SplitTheRaid.ExtraHeader>
-  <SplitTheRaid.PointsHeader>Points</SplitTheRaid.PointsHeader>
-  <SplitTheRaid.RandomHeader>Random</SplitTheRaid.RandomHeader>
-
-  <SplitTheRaid.ColumnStrategyTooltip>Name of the raid strategy</SplitTheRaid.ColumnStrategyTooltip>
-  <SplitTheRaid.CheckExtraTooltip>Allow extra raids for this strategy</SplitTheRaid.CheckExtraTooltip>
-  <SplitTheRaid.CheckPointsTooltip>Allow points modification for this strategy</SplitTheRaid.CheckPointsTooltip>
-  <SplitTheRaid.CheckRandomTooltip>If "Keep the same raid strategy" is set to False, allow random pick of this strategy</SplitTheRaid.CheckRandomTooltip>
-
-  <SplitTheRaid.StrategyMissingTooltip>This strategy is not available (mod may have been removed).</SplitTheRaid.StrategyMissingTooltip>
+	<!-- Main settings -->
+	<SplitTheRaid.ModDisabled>Disable Mod</SplitTheRaid.ModDisabled>
+	<SplitTheRaid.ModDisabledTooltip>When enabled, the mod will not create any new extra raids. Already scheduled raids will still occur. You can clear them in the Debug menu.</SplitTheRaid.ModDisabledTooltip>
+	<SplitTheRaid.AffectAllyRaids>Affect ally raids</SplitTheRaid.AffectAllyRaids>
+	<SplitTheRaid.AffectAllyRaidsTooltip>If disabled, friendly raids will not be modified.</SplitTheRaid.AffectAllyRaidsTooltip>
+	<SplitTheRaid.AffectQuestRaids>Affect quest raids (may be broken)</SplitTheRaid.AffectQuestRaids>
+	<SplitTheRaid.AffectQuestRaidsTooltip>If disabled, quest raids will not be modified.</SplitTheRaid.AffectQuestRaidsTooltip>
+	<SplitTheRaid.KeepSameFaction>Keep the same faction</SplitTheRaid.KeepSameFaction>
+	<SplitTheRaid.KeepSameFactionTooltip>If enabled, all extra raids will use the same faction as the original raid. If disabled, faction is randomized.</SplitTheRaid.KeepSameFactionTooltip>
+	<SplitTheRaid.KeepSameStrategy>Keep the same raid strategy</SplitTheRaid.KeepSameStrategy>
+	<SplitTheRaid.KeepSameStrategyTooltip>If enabled, all extra raids will use the same strategy (e.g., ImmediateAttack, Siege). If disabled, the strategy is randomized.</SplitTheRaid.KeepSameStrategyTooltip>
+	<SplitTheRaid.KeepSameArrivalMode>Keep the same arrival mode</SplitTheRaid.KeepSameArrivalMode>
+	<SplitTheRaid.KeepSameArrivalModeTooltip>If enabled, extra raids will use the same arrival method (on foot, drop pods, etc.) If disabled, the arrival method is randomized.</SplitTheRaid.KeepSameArrivalModeTooltip>
+	<SplitTheRaid.KeepSameSpawnLocation>Keep the same spawn location</SplitTheRaid.KeepSameSpawnLocation>
+	<SplitTheRaid.KeepSameSpawnLocationTooltip>If enabled, extra raids will arrive at the same spawn location.</SplitTheRaid.KeepSameSpawnLocationTooltip>
+	<!-- Raid splitting parameters -->
+	<SplitTheRaid.PointsMultiplier>Points multiplier per raid:</SplitTheRaid.PointsMultiplier>
+	<SplitTheRaid.MinPointsAmountToSplit>Minimum raid points to allow splitting:</SplitTheRaid.MinPointsAmountToSplit>
+	<SplitTheRaid.ExtraRaids>Number of extra raids:</SplitTheRaid.ExtraRaids>
+	<SplitTheRaid.HoursBetweenRaids>Hours between raids:</SplitTheRaid.HoursBetweenRaids>
+	<!-- Delayed raids -->
+	<SplitTheRaid.DelayedRaidsAmount>Current amount of delayed raids: {0}</SplitTheRaid.DelayedRaidsAmount>
+	<SplitTheRaid.DelayedRaidsClear>Clear all</SplitTheRaid.DelayedRaidsClear>
+	<!-- Strategy configuration button -->
+	<SplitTheRaid.OpenStrategyConfig>Open strategy settings</SplitTheRaid.OpenStrategyConfig>
+	<!-- Strategy table -->
+	<SplitTheRaid.TableDescription>Hover over columns for more info.</SplitTheRaid.TableDescription>
+	<SplitTheRaid.StrategyHeader>Strategy</SplitTheRaid.StrategyHeader>
+	<SplitTheRaid.ExtraHeader>Extra raids</SplitTheRaid.ExtraHeader>
+	<SplitTheRaid.PointsHeader>Points</SplitTheRaid.PointsHeader>
+	<SplitTheRaid.RandomHeader>Random</SplitTheRaid.RandomHeader>
+	<SplitTheRaid.ColumnStrategyTooltip>Name of the raid strategy</SplitTheRaid.ColumnStrategyTooltip>
+	<SplitTheRaid.CheckExtraTooltip>Allow extra raids for this strategy</SplitTheRaid.CheckExtraTooltip>
+	<SplitTheRaid.CheckPointsTooltip>Allow points modification for this strategy</SplitTheRaid.CheckPointsTooltip>
+	<SplitTheRaid.CheckRandomTooltip>If "Keep the same raid strategy" is set to False, allow this strategy to be randomly picked.\n\nIf no valid strategy is available (e.g., due to faction restrictions or missing mods), the raid strategy will not be changed.</SplitTheRaid.CheckRandomTooltip>
+	<SplitTheRaid.StrategyMissingTooltip>This strategy is not available (mod may have been removed).</SplitTheRaid.StrategyMissingTooltip>
+	<!-- Debug info -->
+	<SplitTheRaid.SaveNotRunnning>Load a save to see how many raids are queued by the mod.</SplitTheRaid.SaveNotRunnning>
+	<SplitTheRaid.SilenceWarnings>Silence warnings</SplitTheRaid.SilenceWarnings>
+	<SplitTheRaid.SilenceWarningsTooltip>Suppress warning messages from this mod. Errors will still be shown.</SplitTheRaid.SilenceWarningsTooltip>
 </LanguageData>

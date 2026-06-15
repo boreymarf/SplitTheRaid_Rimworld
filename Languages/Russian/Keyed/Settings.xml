@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	<!-- Основные настройки -->
+	<SplitTheRaid.ModDisabled>Отключить мод</SplitTheRaid.ModDisabled>
+	<SplitTheRaid.ModDisabledTooltip>При включении мод не будет создавать новые дополнительные рейды. Уже запланированные рейды всё равно произойдут. Вы можете очистить их в меню отладки.</SplitTheRaid.ModDisabledTooltip>
+	<SplitTheRaid.AffectAllyRaids>Влиять на рейды союзников</SplitTheRaid.AffectAllyRaids>
+	<SplitTheRaid.AffectAllyRaidsTooltip>Если отключено, дружественные рейды не будут изменяться.</SplitTheRaid.AffectAllyRaidsTooltip>
+	<SplitTheRaid.AffectQuestRaids>Влиять на рейды по заданиям (может работать некорректно)</SplitTheRaid.AffectQuestRaids>
+	<SplitTheRaid.AffectQuestRaidsTooltip>Если отключено, рейды по заданиям не будут изменяться.</SplitTheRaid.AffectQuestRaidsTooltip>
+	<SplitTheRaid.KeepSameFaction>Сохранить ту же фракцию</SplitTheRaid.KeepSameFaction>
+	<SplitTheRaid.KeepSameFactionTooltip>Если включено, все дополнительные рейды будут использовать ту же фракцию, что и исходный рейд. Если отключено, фракция выбирается случайно.</SplitTheRaid.KeepSameFactionTooltip>
+	<SplitTheRaid.KeepSameStrategy>Сохранить ту же стратегию рейда</SplitTheRaid.KeepSameStrategy>
+	<SplitTheRaid.KeepSameStrategyTooltip>Если включено, все дополнительные рейды будут использовать ту же стратегию (например, Немедленная атака, Осада). Если отключено, стратегия выбирается случайно.</SplitTheRaid.KeepSameStrategyTooltip>
+	<SplitTheRaid.KeepSameArrivalMode>Сохранить тот же способ прибытия</SplitTheRaid.KeepSameArrivalMode>
+	<SplitTheRaid.KeepSameArrivalModeTooltip>Если включено, дополнительные рейды будут использовать тот же способ прибытия (пешком, десантные капсулы и т. д.). Если отключено, способ прибытия выбирается случайно.</SplitTheRaid.KeepSameArrivalModeTooltip>
+	<SplitTheRaid.KeepSameSpawnLocation>Сохранить то же место появления</SplitTheRaid.KeepSameSpawnLocation>
+	<SplitTheRaid.KeepSameSpawnLocationTooltip>Если включено, дополнительные рейды будут появляться в том же месте.</SplitTheRaid.KeepSameSpawnLocationTooltip>
+	<!-- Параметры разделения рейдов -->
+	<SplitTheRaid.PointsMultiplier>Множитель очков на рейд:</SplitTheRaid.PointsMultiplier>
+	<SplitTheRaid.MinPointsAmountToSplit>Минимальное количество очков рейда для разделения:</SplitTheRaid.MinPointsAmountToSplit>
+	<SplitTheRaid.ExtraRaids>Количество дополнительных рейдов:</SplitTheRaid.ExtraRaids>
+	<SplitTheRaid.HoursBetweenRaids>Часов между рейдами:</SplitTheRaid.HoursBetweenRaids>
+	<!-- Отложенные рейды -->
+	<SplitTheRaid.DelayedRaidsAmount>Текущее количество отложенных рейдов: {0}</SplitTheRaid.DelayedRaidsAmount>
+	<SplitTheRaid.DelayedRaidsClear>Очистить всё</SplitTheRaid.DelayedRaidsClear>
+	<!-- Кнопка настройки стратегий -->
+	<SplitTheRaid.OpenStrategyConfig>Открыть настройки стратегий</SplitTheRaid.OpenStrategyConfig>
+	<!-- Таблица стратегий -->
+	<SplitTheRaid.TableDescription>Наведите на столбцы для дополнительной информации.</SplitTheRaid.TableDescription>
+	<SplitTheRaid.StrategyHeader>Стратегия</SplitTheRaid.StrategyHeader>
+	<SplitTheRaid.ExtraHeader>Доп. рейды</SplitTheRaid.ExtraHeader>
+	<SplitTheRaid.PointsHeader>Очки</SplitTheRaid.PointsHeader>
+	<SplitTheRaid.RandomHeader>Случайно</SplitTheRaid.RandomHeader>
+	<SplitTheRaid.ColumnStrategyTooltip>Название стратегии рейда</SplitTheRaid.ColumnStrategyTooltip>
+	<SplitTheRaid.CheckExtraTooltip>Разрешить дополнительные рейды для этой стратегии</SplitTheRaid.CheckExtraTooltip>
+	<SplitTheRaid.CheckPointsTooltip>Разрешить изменение очков для этой стратегии</SplitTheRaid.CheckPointsTooltip>
+	<SplitTheRaid.CheckRandomTooltip>Если для параметра «Сохранить ту же стратегию рейда» установлено значение «Ложь», разрешить случайный выбор этой стратегии.\n\nЕсли нет доступной стратегии (например, из-за ограничений фракции или отсутствующих модов), стратегия рейда не будет изменена.</SplitTheRaid.CheckRandomTooltip>
+	<SplitTheRaid.StrategyMissingTooltip>Эта стратегия недоступна (возможно, мод был удалён).</SplitTheRaid.StrategyMissingTooltip>
+	<!-- Отладочная информация -->
+	<SplitTheRaid.SaveNotRunnning>Загрузите сохранение, чтобы увидеть, сколько рейдов поставлено в очередь модом.</SplitTheRaid.SaveNotRunnning>
+	<SplitTheRaid.SilenceWarnings>Отключить предупреждения</SplitTheRaid.SilenceWarnings>
+	<SplitTheRaid.SilenceWarningsTooltip>Подавлять предупреждения этого мода. Ошибки по-прежнему будут отображаться.</SplitTheRaid.SilenceWarningsTooltip>
+</LanguageData>

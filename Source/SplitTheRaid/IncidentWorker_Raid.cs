@@ -14,11 +14,35 @@ namespace SplitTheRaid
             var settings = SplitTheRaidMod.Settings;
             var strategiesSettings = settings.strategySettings;
 
+            if (settings.modDisabled)
+            {
+                return;
+            }
+
+            if (parms.quest != null && !settings.affectQuestRaids)
+            {
+                //Log.Message("Not dealing with raids with quests");
+                return;
+            }
+
             // Generate info before hand
-            if (!__instance.TryGenerateRaidInfo(parms, out _))
+            bool raidInfoGenerated = false;
+            for (int attempt = 1; attempt <= 5; attempt++)
+            {
+                if (__instance.TryGenerateRaidInfo(parms, out _))
+                {
+                    raidInfoGenerated = true;
+                    break;
+                }
+                if (!settings.silenceWarnings)
+                {
+                    Log.Warning($"SplitTheRaid: TryGenerateRaidInfo failed, attempt {attempt}/5.");
+                }
+            }
+            if (!raidInfoGenerated)
             {
                 // If something failed, I'm not gonna deal with that
-                Log.Error("SplitTheRaid: faid to TryGenerateRaidInfo.");
+                Log.Error("SplitTheRaid: Game's TryGenerateRaidInfo failed for some reason! Skipping further logic.");
                 return;
             }
 
@@ -34,45 +58,40 @@ namespace SplitTheRaid
                 return;
             }
 
-            if (settings.modDisabled)
-            {
-                return;
-            }
-
             if (parms is IncidentParmsPatched)
             {
                 // Check random strategy for being allowed (if it's random)
                 if (!settings.keepSameStrategy && !raidSettings.allowRandomPick)
                 {
+                    IncidentParms parmsCopy = parms;
                     var allowedNames = strategiesSettings
                         .Where(kvp => kvp.Value.allowRandomPick)
                         .Select(kvp => kvp.Key)
-                        .Where(name => DefDatabase<RaidStrategyDef>.GetNamed(name, false) != null)
+                        .Where(name =>
+                        {
+                            var def = DefDatabase<RaidStrategyDef>.GetNamed(name, false);
+                            if (def == null)
+                                return false;
+                            return def.Worker.CanUseWith(parmsCopy, parmsCopy.pawnGroupKind); // I don't know if it's correct way
+                        })
                         .ToList();
 
-                    string chosenName;
                     if (allowedNames.Count > 0)
                     {
-                        chosenName = allowedNames.RandomElement();
+                        string chosenName = allowedNames.RandomElement();
+                        RaidStrategyDef newStrategy = DefDatabase<RaidStrategyDef>.GetNamed(chosenName, false);
+                        if (newStrategy != null)
+                        {
+                            parms.raidStrategy = newStrategy;
+                        }
                     }
-                    else
+                    else if (!settings.silenceWarnings)
                     {
-                        Log.Warning("SplitTheRaid: No strategy with allowRandomPick. Using ImmediateAttack.");
-                        chosenName = "ImmediateAttack";
-                    }
-
-                    RaidStrategyDef newStrategy = DefDatabase<RaidStrategyDef>.GetNamed(chosenName);
-                    if (newStrategy != null)
-                    {
-                        parms.raidStrategy = newStrategy;
-                    }
-                    else
-                    {
-                        Log.Error($"SplitTheRaid: Failed to find RaidStrategyDef named '{chosenName}'");
+                        Log.Warning("SplitTheRaid: No allowed random strategy found, keeping original strategy.");
                     }
                 }
 
-                // Stop the code here
+                // End code.
                 return;
             }
 
@@ -105,13 +124,13 @@ namespace SplitTheRaid
                 {
                     int delayHours = settings.delayHoursRange.RandomInRange;
                     int delay = delayHours * GenDate.TicksPerHour;
-                    Log.Message($"SplitTheRaid: New delay is {delayHours} hours or {delay} ticks.");
+                    //Log.Message($"SplitTheRaid: New delay is {delayHours} hours or {delay} ticks.");
                     targetTick += delay;
                     Find.Storyteller.incidentQueue.Add(raidType, targetTick, newParms, priority);
-                    Log.Message($"SplitTheRaid: Duplicate raid scheduled at tick {targetTick}, queue size: {Find.Storyteller.incidentQueue.Count}");
+                    //Log.Message($"SplitTheRaid: Duplicate raid scheduled at tick {targetTick}, queue size: {Find.Storyteller.incidentQueue.Count}");
+
                 }
             }
-
         }
     }
 }

@@ -13,14 +13,17 @@ namespace SplitTheRaid
         public static SplitTheRaidSettings Settings;
 
         private readonly UIHelper.IntRangeExpanded _delayHoursRange;
-        private string pointsMultiplierBuffer;
-        private string minPointsAmountToSplitBuffer;
-        private string extraRaidsBuffer;
+        private readonly FloatInputExpanded _pointsMultiplierInput;
+        private readonly IntInputExpanded _minPointsAmountInput;
+        private readonly IntInputExpanded _extraRaidsInput;
 
         public SplitTheRaidMod(ModContentPack content) : base(content)
         {
             Settings = GetSettings<SplitTheRaidSettings>();
             _delayHoursRange = new UIHelper.IntRangeExpanded(0, 200, 1);
+            _pointsMultiplierInput = new FloatInputExpanded(0f, 100f, 0f, 5f, true);
+            _minPointsAmountInput = new IntInputExpanded(0, 10000, 0, 10000, true);
+            _extraRaidsInput = new IntInputExpanded(0, 100, 0, 5, true);
         }
 
         public override void DoSettingsWindowContents(Rect inRect)
@@ -29,11 +32,13 @@ namespace SplitTheRaid
             listing.Begin(inRect);
 
             // Checkboxes
-            listing.CheckboxLabeled("SplitTheRaid.ModDisabled".Translate(), ref Settings.modDisabled);
-            listing.CheckboxLabeled("SplitTheRaid.AffectAllyRaids".Translate(), ref Settings.affectAllyRaids);
-            listing.CheckboxLabeled("SplitTheRaid.KeepSameFaction".Translate(), ref Settings.keepSameFaction);
-            listing.CheckboxLabeled("SplitTheRaid.KeepSameStrategy".Translate(), ref Settings.keepSameStrategy);
-            listing.CheckboxLabeled("SplitTheRaid.KeepSameSpawnLocation".Translate(), ref Settings.keepSameSpawnLocation);
+            listing.CheckboxLabeled("SplitTheRaid.ModDisabled".Translate(), ref Settings.modDisabled, "SplitTheRaid.ModDisabledTooltip".Translate());
+            listing.CheckboxLabeled("SplitTheRaid.AffectAllyRaids".Translate(), ref Settings.affectAllyRaids, "SplitTheRaid.AffectAllyRaidsTooltip".Translate());
+            listing.CheckboxLabeled("SplitTheRaid.AffectQuestRaids".Translate(), ref Settings.affectQuestRaids, "SplitTheRaid.AffectQuestRaidsTooltip".Translate());
+            listing.CheckboxLabeled("SplitTheRaid.KeepSameFaction".Translate(), ref Settings.keepSameFaction, "SplitTheRaid.KeepSameFactionTooltip".Translate());
+            listing.CheckboxLabeled("SplitTheRaid.KeepSameStrategy".Translate(), ref Settings.keepSameStrategy, "SplitTheRaid.KeepSameStrategyTooltip".Translate());
+            listing.CheckboxLabeled("SplitTheRaid.KeepSameArrivalMode".Translate(), ref Settings.keepSameArrivalMode, "SplitTheRaid.KeepSameArrivalModeTooltip".Translate());
+            listing.CheckboxLabeled("SplitTheRaid.KeepSameSpawnLocation".Translate(), ref Settings.keepSameSpawnLocation, "SplitTheRaid.KeepSameSpawnLocationTooltip".Translate());
 
             listing.Gap(12f);
 
@@ -44,19 +49,9 @@ namespace SplitTheRaid
 
             listing.Gap(12f);
 
-            // Inputs
-            UIHelper.FloatInput(listing, ref Settings.pointsMultiplier, ref pointsMultiplierBuffer,
-                "SplitTheRaid.PointsMultiplier".Translate(), 0, 100);
-            float newValue = listing.Slider(Settings.pointsMultiplier, 0.1f, 5f);
-            Settings.pointsMultiplier = RoundToStep(newValue, 0.01f);
-
-            UIHelper.IntInput(listing, ref Settings.minPointsAmountToSplit, ref minPointsAmountToSplitBuffer,
-                "SplitTheRaid.MinPointsAmountToSplit".Translate(), 0, 100000);
-            Settings.minPointsAmountToSplit = Mathf.RoundToInt(listing.Slider((float)Settings.minPointsAmountToSplit, 0f, 10000f));
-
-            UIHelper.IntInput(listing, ref Settings.extraRaids, ref extraRaidsBuffer,
-                "SplitTheRaid.ExtraRaids".Translate(), 0, 100);
-            Settings.extraRaids = Mathf.RoundToInt(listing.Slider((float)Settings.extraRaids, 0f, 5f));
+            _pointsMultiplierInput.Draw(listing, ref Settings.pointsMultiplier, "SplitTheRaid.PointsMultiplier".Translate());
+            _minPointsAmountInput.Draw(listing, ref Settings.minPointsAmountToSplit, "SplitTheRaid.MinPointsAmountToSplit".Translate());
+            _extraRaidsInput.Draw(listing, ref Settings.extraRaids, "SplitTheRaid.ExtraRaids".Translate());
 
             listing.Label("SplitTheRaid.HoursBetweenRaids".Translate());
             _delayHoursRange.Draw(listing, ref Settings.delayHoursRange);
@@ -78,6 +73,7 @@ namespace SplitTheRaid
             {
                 listing.Label("SplitTheRaid.SaveNotRunnning".Translate());
             }
+            listing.CheckboxLabeled("SplitTheRaid.SilenceWarnings".Translate(), ref Settings.silenceWarnings, "SplitTheRaid.SilenceWarningsTooltip".Translate());
 
             listing.End();
         }
